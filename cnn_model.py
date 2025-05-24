@@ -1,6 +1,10 @@
 import torch.nn as nn
 
 class ChessCNN(nn.Module):
+    #model architecture: input -> conv2d -> relu -> conv2d -> relu -> conv2d -> relu -> flatten -> linear -> relu -> linear
+    #input is an 8 x 8 matrix (representing a chess board) with 13 channels (12 for each unique piece and 1 for legal moves)
+    #num_classes is the total number of unique moves in the dataset
+
     def __init__(self, num_classes):
         super().__init__()
 
