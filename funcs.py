@@ -1,5 +1,7 @@
 import numpy as np
+from chess.pgn import Game
 from chess import Board
+from typing import List
 
 
 def board_to_tensor(board: Board):
@@ -18,3 +20,24 @@ def board_to_tensor(board: Board):
         tensor[12,row_to,col_to] = 1
 
     return tensor
+
+def games_to_input(games: List[Game]):
+    X = []
+    y = []
+    for game in games:
+        board = game.board() 
+        for move in game.mainline_moves():
+            X.append(board_to_tensor(board))
+            y.append(move.uci())
+            board.push(move)
+    return np.array(X, dtype=np.float32), np.array(y)
+
+def encode_moves(moves):
+    move_to_int = {move: int for int, move in enumerate(set(moves))}
+
+        
+        
+
+
+
+
