@@ -34,6 +34,8 @@ def games_to_input(games: List[Game]):
 
 def encode_moves(moves):
     move_to_int = {move: int for int, move in enumerate(set(moves))}
+    moves = [move_to_int[move] for move in moves]
+    return np.array(moves, dtype=np.float32), move_to_int
 
         
         
