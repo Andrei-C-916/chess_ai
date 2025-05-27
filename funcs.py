@@ -3,7 +3,8 @@ from chess.pgn import Game
 from chess import Board
 from typing import List
 
-
+#returns a tensor representation of a chess board. Tensor is of shape (13,8,8)
+#requires: board is of type Board
 def board_to_tensor(board: Board):
     tensor = np.zeros((13,8,8))
     piece_map = board.piece_map()
@@ -21,6 +22,9 @@ def board_to_tensor(board: Board):
 
     return tensor
 
+#returns an np.array of board tensors and an np.array of labels, where the board tensors are (13,8,8) and the labels are uci formatted strings.
+#label y_i is the move that was played in position X_i
+#requires: games is of type List[Game]
 def games_to_input(games: List[Game]):
     X = []
     y = []
@@ -32,10 +36,14 @@ def games_to_input(games: List[Game]):
             board.push(move)
     return np.array(X, dtype=np.float32), np.array(y)
 
+#returns an np.array of moves encoded as ints, a dict mapping moves to ints, and a dict mapping ints to moves.
+#requires: moves is a list of uci formatted strings
 def encode_moves(moves):
-    move_to_int = {move: int for int, move in enumerate(set(moves))}
+    unique_moves = list(set(moves))
+    move_to_int = {move: int for int, move in enumerate(unique_moves)}
+    int_to_move = {int: move for int, move in enumerate(unique_moves)}
     moves = [move_to_int[move] for move in moves]
-    return np.array(moves, dtype=np.float32), move_to_int
+    return np.array(moves, dtype=np.float32), move_to_int, int_to_move
 
         
         
