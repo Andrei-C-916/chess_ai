@@ -2,6 +2,7 @@ import numpy as np
 from chess.pgn import Game
 from chess import Board
 from typing import List
+import chess
 
 #returns a tensor representation of a chess board. Tensor is of shape (13,8,8)
 #requires: board is of type Board
@@ -45,9 +46,20 @@ def encode_moves(moves):
     moves = [move_to_int[move] for move in moves]
     return np.array(moves, dtype=np.float32), move_to_int, int_to_move
 
-        
-        
-
+def fen_and_moves_to_input(fen,moves):
+    X = []
+    y = [] 
+    board = Board(fen)
+    uci_list = moves.split()
+    board.push(chess.Move.from_uci(uci_list[0]))
+    uci_list = uci_list[1:]
+    for uci in uci_list:
+        tensor = board_to_tensor(board)
+        label = uci
+        X.append(tensor)
+        y.append(label)
+        board.push(chess.Move.from_uci(uci))
+    return np.array(X, dtype=np.float32), np.array(y)
 
 
 
