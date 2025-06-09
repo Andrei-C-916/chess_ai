@@ -53,6 +53,26 @@ class ResBlock(nn.Module):
         return self.relu(out)
     
 
+class ResBlockSimple(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1):
+        super().__init__()
+
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU()
+
+        if in_channels != out_channels:
+            self.shortcut = nn.Conv2d(in_channels, out_channels, kernel_size=1)
+        else:
+            self.shortcut = nn.Identity()
+
+    def forward(self, x):
+        out = self.bn1(self.conv1(x))
+        out += self.shortcut(x)
+        out = self.relu(out)
+        return self.relu(out)
+    
+
 class ChessResNet(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
@@ -79,5 +99,35 @@ class ChessResNet(nn.Module):
         x = self.fc2(x)
 
         return x
+    
+
+class ChessResNetSimple(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+
+        self.initial_conv = nn.Conv2d(13,64,kernel_size=3,padding=1)
+
+        self.resblock1 = ResBlock(64,128)
+
+        self.relu = nn.ReLU()
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(8*8*128,256)
+        self.fc2 = nn.Linear(256,num_classes)
+
+    def forward(self,x):
+        x = self.relu(self.initial_conv(x))
+
+        x = self.resblock1(x)
+
+        x = self.flatten(x)
+
+        x = self.relu(self.fc1(x))
+        x = self.fc2(x)
+
+        return x
+    
+    
+
+
 
     
