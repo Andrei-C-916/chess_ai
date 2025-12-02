@@ -107,7 +107,7 @@ class ChessResNetSimple(nn.Module):
 
         self.initial_conv = nn.Conv2d(13,64,kernel_size=3,padding=1)
 
-        self.resblock1 = ResBlock(64,128)
+        self.resblock1 = ResBlockSimple(64,128)
 
         self.relu = nn.ReLU()
         self.flatten = nn.Flatten()
