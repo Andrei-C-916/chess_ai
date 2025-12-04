@@ -6,7 +6,7 @@ RANKS = "12345678"
 
 # returns a (13, 8, 8) tensor representation of [board]. Channels 1-6 are current player's pieces. 
 # channels 7-12 are opposing player's pieces. Channel 13 is current player's legal moves
-def board_to_tensor(board: Board):
+def board_to_encoding(board: Board):
     tensor = np.zeros((13, 8, 8))
     current_color = board.turn
 
