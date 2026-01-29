@@ -43,7 +43,7 @@ class AlphaZero:
             state = self.game.get_next_state(state, move) 
             move_count += 1
             is_terminal, value = self.game.check_termination_and_get_value(state)
-            if is_terminal:
+            if is_terminal or move_count >= self.args["max_plies"]:
                 returnMemory = []
                 for state, action_probs in memory:
                     if state.turn == chess.WHITE:

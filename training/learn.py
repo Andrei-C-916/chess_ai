@@ -29,7 +29,8 @@ args = {
     'dirichlet_eps': 0.25,
     'temperature_moves': 20,
     'temperature_early': 1.0,
-    'temperature_late': 0.1
+    'temperature_late': 0.1,
+    'max_plies': 200
 }
 
 az = AlphaZero(
