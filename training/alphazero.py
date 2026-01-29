@@ -14,15 +14,34 @@ class AlphaZero:
         self.args = args
         self.mcts = MCTS(game, args, model)
 
+    # temperature to increase diversity during self play
+    def apply_temperature(probs, tau):
+        if tau <= 1e-8:
+            out = np.zeros_like(probs)
+            out[np.argmax(probs)] = 1.0
+            return out
+        p = probs ** (1.0 / tau)
+        return p / np.sum(p)
+
     def self_play(self):
         memory = []
         state = self.game.get_initial_state()
+        move_count = 0
 
         while True:
             action_probs = self.mcts.search(state)
+
+            if move_count <= self.args["temperature_moves"]:
+                tau = self.args["temperature_early"]
+            else:
+                tau = self.args["temperature_late"]
+
+            action_probs = self.apply_temperature(action_probs, tau)
+
             memory.append((state.copy(), action_probs))
             move = np.random.choice(self.game.action_size, p=action_probs)
             state = self.game.get_next_state(state, move) 
+            move_count += 1
             is_terminal, value = self.game.check_termination_and_get_value(state)
             if is_terminal:
                 returnMemory = []

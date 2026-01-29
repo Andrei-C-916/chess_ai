@@ -17,7 +17,7 @@ class Node:
         self.visit_count = 0
         self.value_sum = 0
 
-    def is_fully_expanded(self):
+    def is_expanded(self):
         return len(self.children) > 0
     
     def select(self):
@@ -65,7 +65,7 @@ class MCTS:
         for _ in range(self.args['num_searches']):
             node = root
 
-            while node.is_fully_expanded():
+            while node.is_expanded():
                 node = node.select()
 
             is_terminal, outcome = self.game.check_termination_and_get_value(node.state)
@@ -88,6 +88,19 @@ class MCTS:
                     policy /= sum_policy
                 else:
                     policy = valid_moves / np.sum(valid_moves)
+
+                # dirichlet noise to increase diversity
+                if node is root and self.args.get("dirichlet_eps", 0) > 0:
+                    eps = self.args["dirichlet_eps"]
+                    alpha = self.args["dirichlet_alpha"]
+
+                    valid_idx = np.where(valid_moves > 0)[0]
+                    noise = np.random.dirichlet([alpha] * len(valid_idx))
+
+                    policy2 = policy.copy()
+                    policy2[valid_idx] = (1 - eps) * policy2[valid_idx] + eps * noise
+                    policy = policy2 / np.sum(policy2)
+
                 node.expand(policy)
 
             node.backpropagate(value)

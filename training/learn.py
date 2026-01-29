@@ -24,7 +24,12 @@ args = {
     'num_epochs': 3,
     'batch_size': 32,
     'C': 1.0,
-    'num_searches': 100
+    'num_searches': 100,
+    'dirichlet_alpha': 0.3,
+    'dirichlet_eps': 0.25,
+    'temperature_moves': 20,
+    'temperature_early': 1.0,
+    'temperature_late': 0.1
 }
 
 az = AlphaZero(
