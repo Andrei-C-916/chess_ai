@@ -37,16 +37,20 @@ class AlphaZero:
         np.random.shuffle(memory)
         for batchIdx in range(0, len(memory), self.args['batch_size']):
             sample = memory[batchIdx:min(len(memory), batchIdx + self.args['batch_size'])]
-            state, policy_targets, value_targets = zip(*sample)
-            state, policy_targets, value_targets = np.array(state), np.array(policy_targets), np.array(value_targets).reshape(-1, 1)
 
-            state = torch.tensor(state, dtype=torch.float32)
-            policy_targets = torch.tensor(policy_targets, dtype=torch.float32)
-            value_targets = torch.tensor(value_targets, dtype=torch.float32)
+            state, policy_targets, value_targets = zip(*sample)
+            state = np.array(state)
+            policy_targets = np.array(policy_targets)
+            value_targets = np.array(value_targets).reshape(-1, 1)
+
+            state = torch.tensor(state, dtype=torch.float32, device=self.device)
+            policy_targets = torch.tensor(policy_targets, dtype=torch.float32, device=self.device)
+            value_targets = torch.tensor(value_targets, dtype=torch.float32, device=self.device)
 
             out_policy, out_value = self.model(state)
 
-            policy_loss = F.cross_entropy(out_policy, policy_targets)
+            log_policy = F.log_softmax(out_policy, dim=1)
+            policy_loss = -(policy_targets * log_policy).sum(dim=1).mean()
             value_loss = F.mse_loss(out_value, value_targets)
             loss = policy_loss + value_loss
 
