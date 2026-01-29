@@ -1,4 +1,4 @@
-from chess_utils import generate_all_moves, board_to_encoding
+from .chess_utils import generate_all_moves, board_to_encoding
 from chess import Board
 import numpy as np
 
@@ -9,6 +9,8 @@ INT_TO_UCI = {i: uci for i, uci in enumerate(ALL_MOVES)}
 class ChessModule:
     def __init__(self) -> int:
         self.action_size = len(ALL_MOVES)
+        self.row_count = 8
+        self.column_count = 8
 
     def get_initial_state(self) -> Board:
         return Board()
@@ -22,8 +24,10 @@ class ChessModule:
             result = state.result()
             if result == "1/2-1/2":
                 return True, 0
-            else:
-                return True, -1 # if game is not a draw, current player at state [state] lost.
+            elif result == "1-0":
+                return True, 1
+            elif result == "0-1":
+                return True, -1
         return False, 0
     
     def get_valid_moves(self, state: Board) -> np.ndarray:

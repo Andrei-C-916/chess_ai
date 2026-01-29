@@ -1,7 +1,7 @@
 import numpy as np
 import chess
 
-from chess_utils import board_to_encoding, generate_all_moves
+from .chess_utils import board_to_encoding, generate_all_moves
 
 def test_board_to_encoding_shape_and_dtype():
     board = chess.Board()

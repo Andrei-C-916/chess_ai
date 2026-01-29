@@ -1,5 +1,5 @@
-import chess_module
-from chess_module import ChessModule
+from . import chess_module
+from .chess_module import ChessModule
 import chess
 import numpy as np
 
@@ -37,7 +37,7 @@ def test_check_termination_and_get_value_white_win():
     white_win_board = chess.Board("7k/6Q1/5K2/8/8/8/8/8 b - - 0 1")
     is_terminal, value = game.check_termination_and_get_value(white_win_board)
     assert is_terminal is True
-    assert value == -1
+    assert value == 1
 
 def test_check_termination_and_get_value_black_win():
     game = ChessModule()

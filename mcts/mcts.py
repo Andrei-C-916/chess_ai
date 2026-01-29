@@ -2,6 +2,7 @@ from game.chess_module import ChessModule
 from chess import Board
 import torch
 import numpy as np
+import chess
 import math
 
 class Node:
@@ -67,12 +68,18 @@ class MCTS:
             while node.is_fully_expanded():
                 node = node.select()
 
-            is_terminal, value = self.game.check_termination_and_get_value(node.state)
+            is_terminal, outcome = self.game.check_termination_and_get_value(node.state)
+            if is_terminal:
+                if node.state.turn == chess.WHITE:   # white to move just lost ⇒ outcome = -1 already
+                    value = outcome
+                else:                                # black to move just lost ⇒ outcome = +1, need -1
+                    value = -outcome
 
-            if not is_terminal:
+            else:
                 policy, value = self.model(
-                    torch.tensor(self.game.get_state_encoding(node.state)).unsqueeze(0)
+                    torch.tensor(self.game.get_state_encoding(node.state), dtype=torch.float32).unsqueeze(0)
                 )
+                value = value.item()
                 policy = torch.softmax(policy, dim=1).squeeze(0).cpu().numpy()
                 valid_moves = self.game.get_valid_moves(node.state)
                 policy *= valid_moves
