@@ -15,7 +15,7 @@ class AlphaZero:
         self.mcts = MCTS(game, args, model)
 
     # temperature to increase diversity during self play
-    def apply_temperature(probs, tau):
+    def apply_temperature(self, probs, tau):
         if tau <= 1e-8:
             out = np.zeros_like(probs)
             out[np.argmax(probs)] = 1.0
